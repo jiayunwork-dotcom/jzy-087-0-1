@@ -1,0 +1,20 @@
+services:
+  gap-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: assembly-gap-service:latest
+    ports:
+      # 宿主机 8080 -> 容器 8080，一条命令起服务：
+      #   docker compose up --build -d
+      - "8080:8080"
+    environment:
+      # 留空则监听 :8080
+      GAP_SERVICE_ADDR: ":8080"
+    restart: unless-stopped
+    healthcheck:
+      # 程序自带 -check 模式：向自身 /health 发一次请求后退出。
+      test: ["CMD", "/gap-service", "-check", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
